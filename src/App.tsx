@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { sculptureList } from './data.tsx';
+import { characterList } from './data.tsx';
+import './App.css';
+import { Card, CardMedia, CardContent, CardActions, Collapse, Typography, Button, Stack } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-export default function Gallery() {
+export default function CharacterCard() {
   const [index, setIndex] = useState(0);
-  const [showMore, setShowMore] = useState(false);
-  const hasNext = index < sculptureList.length - 1;
-  const hasPrevious = index > 0;
+  const [expanded, setExpanded] = useState(false);
+  const hasNext = index < characterList.length - 1;
+  const hasBack = index > 0;
 
   function handleNextClick() {
     if (hasNext) {
@@ -16,42 +19,66 @@ export default function Gallery() {
   }
 
   function handleBackClick() {
-    if (hasPrevious) {
+    if (hasBack) {
       setIndex(index - 1);
     } else {
-      setIndex(sculptureList.length - 1);
+      setIndex(characterList.length - 1);
     }
   }
 
-  function handleMoreClick() {
-    setShowMore(!showMore);
+  function handleExpandClick() {
+    setExpanded(!expanded);
   }
 
-  let sculpture = sculptureList[index];
+  let character = characterList[index];
+
   return (
-    <>
-    <h1>Jordan Micko S. Deloria</h1>
-      <button onClick={handleBackClick}>
-        Back
-      </button>
-      <button onClick={handleNextClick}>
-        Next
-      </button>
-      <h2>
-        <i>{sculpture.name} </i>
-        from {sculpture.artist}
-      </h2>
-      <h3>
-        ({index + 1} of {sculptureList.length})
-      </h3>
-      <button onClick={handleMoreClick}>
-        {showMore ? 'Hide' : 'Show'} details
-      </button>
-      {showMore && <p>{sculpture.description}</p>}
-      <img
-        src={sculpture.url}
-        alt={sculpture.alt}
-      />
-    </>
+    <div className="character-box">
+      <div className="character-header">
+        <Card sx={{ maxWidth: 345 }} className="character-card">
+          <h2>FAV CHARACTER</h2>
+          <h5>Jordan Micko Deloria - C-PEITEL3</h5>
+          <h3>
+            {index + 1} of {characterList.length}
+          </h3>
+
+          <Stack spacing={2} direction="row" justifyContent="center" sx={{ marginBottom: 2 }}>
+            <Button variant="contained" onClick={handleBackClick} disabled={!hasBack}>BACK</Button>
+            <Button variant="contained" onClick={handleNextClick} disabled={!hasNext}>NEXT</Button>
+          </Stack>
+
+          <CardMedia
+            component="img"
+            image={character.url}
+            alt={character.alt}
+            className="character-image"
+          />
+
+          <CardContent>
+            <Typography variant="h6" className="character-title">{character.name}</Typography>
+            <Typography variant="body2" color="text.secondary">FROM {character.artist}</Typography>
+          </CardContent>
+
+          <CardActions className="card-actions" disableSpacing>
+            <Button
+              onClick={handleExpandClick}
+              aria-expanded={expanded}
+              aria-label="show more"
+              sx={{
+                transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease',
+              }}
+            >
+              <ExpandMoreIcon />
+            </Button>
+          </CardActions>
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <CardContent>
+              <Typography>{character.description}</Typography>
+            </CardContent>
+          </Collapse>
+        </Card>
+      </div>
+    </div>
   );
 }
